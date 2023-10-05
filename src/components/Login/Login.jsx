@@ -1,19 +1,29 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
+  const [loginError, setLoginError] = useState("");
+  const [loginErrorCode, setLoginErrorCode] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
+    setLoginError("");
+
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        setLoggedInUser(user);
         console.log(user);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        setLoginError(errorMessage);
+        setLoginErrorCode(errorCode);
         console.log(errorCode, errorMessage);
       });
   };
@@ -38,13 +48,21 @@ const Login = () => {
             placeholder="Password"
           />
           <br />
+          {loginError && <p className="font-bold text-red-600">{loginError}</p>}
+          {loggedInUser && (
+            <p className="font-bold text-green-600">Successfully Logged In</p>
+          )}
+          <br />
           <input
-            className="btn btn-secondary w-3/4"
+            className="btn btn-secondary w-3/4 mb-4"
             type="submit"
             value="Login"
           />{" "}
           <br />
         </form>
+        <p>
+          New to this website? Please <Link to="/register">Register</Link>
+        </p>
       </div>
     </div>
   );
