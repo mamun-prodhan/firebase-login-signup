@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  updateProfile,
 } from "firebase/auth";
 import auth from "../../firebase/firebase.config";
 import { useState } from "react";
@@ -12,10 +13,12 @@ const Register = () => {
   const [registerSuccess, setRegisterSuccess] = useState("");
   const handleSubmit = (e) => {
     e.preventDefault();
+    const name = e.target.name.value;
+    const photoURL = e.target.photoURL.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
     const terms = e.target.terms.checked;
-    console.log(email, password, terms);
+    console.log(name, photoURL, email, password, terms);
     setRegisterError("");
     setRegisterSuccess("");
 
@@ -34,6 +37,17 @@ const Register = () => {
         const user = userCredential.user;
         console.log(user);
         setRegisterSuccess("User Registered Successfully");
+        //update user profile display name and photo url
+        updateProfile(user, {
+          displayName: name,
+          photoURL: photoURL,
+        })
+          .then(() => {
+            console.log("Profile Updated");
+          })
+          .catch((error) => {
+            console.log(error.message);
+          });
         // email verification
         sendEmailVerification(userCredential.user).then(() => {
           alert("A verification email is sent, Please verify your email");
@@ -52,6 +66,24 @@ const Register = () => {
       <div className="w-1/2 mx-auto">
         <h2 className="text-3xl mb-8">Please Register</h2>
         <form onSubmit={handleSubmit}>
+          <input
+            className="py-3 px-3 mb-4 w-3/4"
+            type="text"
+            name="name"
+            id=""
+            placeholder="Your Name"
+            required
+          />
+          <br />
+          <input
+            className="py-3 px-3 mb-4 w-3/4"
+            type="photoURL"
+            name="photoURL"
+            id=""
+            placeholder="Enter Your Photo URL"
+            required
+          />
+          <br />
           <input
             className="py-3 px-3 mb-4 w-3/4"
             type="email"
