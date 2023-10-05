@@ -10,18 +10,25 @@ const Login = () => {
   const [loginError, setLoginError] = useState("");
   const [loginErrorCode, setLoginErrorCode] = useState("");
   const [loggedInUser, setLoggedInUser] = useState("");
+  const [success, setSuccess] = useState("");
   const emailRef = useRef(null);
   const handleSubmit = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
     setLoginError("");
+    setSuccess("");
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         setLoggedInUser(user);
         console.log(user);
+        if (user.emailVerified) {
+          setSuccess("Successfully logged In");
+        } else {
+          alert("Please verify your email address");
+        }
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -85,7 +92,7 @@ const Login = () => {
           </label>
           {loginError && <p className="font-bold text-red-600">{loginError}</p>}
           {loggedInUser && (
-            <p className="font-bold text-green-600">Successfully Logged In</p>
+            <p className="font-bold text-green-600">{success}</p>
           )}
           <br />
           <input
